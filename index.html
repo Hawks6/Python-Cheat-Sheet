@@ -1,0 +1,1656 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Python DSA · The Digital Broadsheet</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600;6..72,700;6..72,800&amp;family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@400;600&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+    <style>
+        body {
+            background-color: #131313;
+            color: #e5e2e1;
+            scroll-behavior: smooth;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .double-underline {
+            border-bottom: 4px double #ffd43b;
+        }
+
+        pre {
+            scrollbar-width: thin;
+            scrollbar-color: #4d4633 transparent;
+        }
+
+        /* Custom syntax highlighting */
+        .kw { color: #ffd43b; font-weight: 600; } /* keywords */
+        .st { color: #a9d293; } /* strings */
+        .cm { color: #636366; font-style: italic; } /* comments */
+        .nm { color: #ecc228; } /* numbers */
+        .op { color: #999079; } /* operators */
+        .fn { color: #62d6e3; } /* functions */
+        .cl { color: #f19ad2; } /* classes/types */
+
+        /* Table Styles */
+        .ref-table { border-collapse: collapse; width: 100%; }
+        .ref-table th { color: #ffd43b; font-family: 'Space Grotesk', sans-serif; text-transform: uppercase; font-size: 10px; letter-spacing: 0.1em; padding: 12px 8px; text-align: left; border-bottom: 1px solid #292524; }
+        .ref-table td { padding: 10px 8px; font-size: 13px; border-bottom: 1px solid #1c1917; vertical-align: top; }
+        .ref-table tr:last-child td { border-bottom: none; }
+        
+        /* Layout Fixes */
+        .main-content {
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar slide-out */
+        .sidebar-overlay {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .sidebar-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .sidebar-panel {
+            transform: translateX(-100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .sidebar-panel.active {
+            transform: translateX(0);
+        }
+
+        /* Search Panel */
+        .search-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.6); backdrop-filter:blur(4px); z-index:60; opacity:0; pointer-events:none; transition:opacity 0.3s ease; }
+        .search-overlay.active { opacity:1; pointer-events:auto; }
+        .search-panel { position:fixed; top:80px; left:0; right:0; background:#0e0e0e; border-bottom:1px solid #292524; z-index:61; transform:translateY(-100%); opacity:0; transition:transform 0.3s cubic-bezier(0.4,0,0.2,1), opacity 0.3s ease; padding:24px; }
+        .search-panel.active { transform:translateY(0); opacity:1; }
+        .search-input { width:100%; background:transparent; border:none; border-bottom:2px solid #ffd43b; color:#e5e2e1; font-family:'Space Grotesk',sans-serif; font-size:18px; padding:12px 0; outline:none; }
+        .search-input::placeholder { color:#636366; }
+        .search-results { margin-top:16px; max-height:300px; overflow-y:auto; }
+        .search-result-item { display:flex; align-items:center; gap:12px; padding:10px 12px; color:#a8a29e; font-family:'Space Grotesk',sans-serif; font-size:13px; letter-spacing:0.05em; text-transform:uppercase; cursor:pointer; border-left:2px solid transparent; transition:all 0.2s ease; }
+        .search-result-item:hover { color:#ffd43b; border-left-color:#ffd43b; background:rgba(255,212,59,0.05); }
+        .search-result-item .result-num { color:#ffd43b; font-weight:600; min-width:24px; }
+
+        /* Settings Panel */
+        .settings-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.6); backdrop-filter:blur(4px); z-index:60; opacity:0; pointer-events:none; transition:opacity 0.3s ease; }
+        .settings-overlay.active { opacity:1; pointer-events:auto; }
+        .settings-panel { position:fixed; top:0; right:0; height:100%; width:300px; background:#0e0e0e; border-left:1px solid #292524; z-index:61; transform:translateX(100%); transition:transform 0.3s cubic-bezier(0.4,0,0.2,1); padding:48px 24px; display:flex; flex-direction:column; gap:32px; overflow-y:auto; }
+        .settings-panel.active { transform:translateX(0); }
+        .settings-label { font-family:'Space Grotesk',sans-serif; font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:#636366; margin-bottom:8px; }
+        .settings-toggle-group { display:flex; gap:4px; }
+        .settings-toggle-btn { flex:1; padding:8px 12px; background:#1c1b1b; border:1px solid #292524; color:#a8a29e; font-family:'Space Grotesk',sans-serif; font-size:12px; cursor:pointer; transition:all 0.2s ease; text-align:center; }
+        .settings-toggle-btn.active { background:#ffd43b; color:#0e0e0e; border-color:#ffd43b; font-weight:600; }
+        .settings-toggle-btn:hover:not(.active) { border-color:#ffd43b; color:#ffd43b; }
+        .settings-action-btn { width:100%; padding:12px; background:transparent; border:1px solid #292524; color:#a8a29e; font-family:'Space Grotesk',sans-serif; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; cursor:pointer; transition:all 0.2s ease; display:flex; align-items:center; justify-content:center; gap:8px; }
+        .settings-action-btn:hover { border-color:#ffd43b; color:#ffd43b; }
+
+        /* Font Size Variants */
+        body.font-sm { font-size:14px; }
+        body.font-sm pre, body.font-sm code { font-size:11px !important; }
+        body.font-lg { font-size:18px; }
+        body.font-lg pre, body.font-lg code { font-size:15px !important; }
+
+        /* Light Theme — High Contrast */
+        body.light { background-color:#faf8f5 !important; color:#1c1917 !important; }
+
+        /* Header & Nav */
+        body.light header { background:#faf8f5 !important; border-color:#c8c3bc !important; }
+        body.light header .hover\:bg-stone-900:hover { background:#e7e5e4 !important; }
+        body.light .text-stone-100 { color:#1c1917 !important; }
+        body.light .text-stone-300 { color:#44403c !important; }
+        body.light .text-stone-400 { color:#57534e !important; }
+        body.light .text-stone-500 { color:#57534e !important; }
+        body.light .text-stone-600 { color:#78716c !important; }
+        body.light .text-dim { color:#78716c !important; }
+        body.light .text-on-background { color:#1c1917 !important; }
+
+        /* Gold → Dark Amber — the core fix for all accent text */
+        body.light .text-\[\#FFD43B\] { color:#92600a !important; }
+        body.light .text-primary-container { color:#92600a !important; }
+        body.light .text-accent { color:#92600a !important; }
+        body.light .text-heritage-gold { color:#92600a !important; }
+
+        /* Gold borders → Dark Amber borders */
+        body.light .border-\[\#FFD43B\] { border-color:#92600a !important; }
+        body.light .border-primary-container { border-color:#92600a !important; }
+        body.light .border-accent { border-color:#92600a !important; }
+        body.light .border-primary-container\/30 { border-color:rgba(146,96,10,0.3) !important; }
+        body.light .border-primary-container\/10 { border-color:rgba(146,96,10,0.1) !important; }
+        body.light .double-underline { border-bottom-color:#92600a !important; }
+
+        /* Panels */
+        body.light .sidebar-panel, body.light .settings-panel, body.light .search-panel { background:#faf8f5 !important; border-color:#c8c3bc !important; color:#1c1917 !important; }
+        body.light .search-input { color:#1c1917; border-bottom-color:#92600a !important; }
+        body.light .search-input::placeholder { color:#78716c !important; }
+        body.light .search-result-item { color:#57534e !important; }
+        body.light .search-result-item:hover { color:#92600a !important; border-left-color:#92600a !important; background:rgba(146,96,10,0.06) !important; }
+        body.light .search-result-item .result-num { color:#92600a !important; }
+        body.light .settings-toggle-btn { background:#f0ece8; border-color:#c8c3bc; color:#44403c; }
+        body.light .settings-toggle-btn.active { background:#92600a !important; color:#fff !important; border-color:#92600a !important; }
+        body.light .settings-action-btn { border-color:#c8c3bc; color:#44403c; }
+        body.light .settings-action-btn:hover { border-color:#92600a; color:#92600a; }
+        body.light .settings-label { color:#78716c !important; }
+
+        /* Sidebar */
+        body.light .sidebar-link { color:#57534e !important; }
+        body.light .sidebar-link:hover { color:#92600a !important; border-color:#92600a !important; }
+        body.light .sidebar-link.active { color:#92600a !important; border-color:#92600a !important; }
+
+        /* Code blocks — THE critical fix */
+        body.light pre { background:#f5f0eb !important; border:1px solid #d6d3d1 !important; color:#1c1917 !important; }
+        body.light code { color:#1c1917 !important; }
+        body.light .bg-stone-950 { background:#f5f0eb !important; color:#1c1917 !important; }
+        body.light .bg-stone-950\/30 { background:#ffffff !important; }
+
+        /* Syntax highlighting — dark variants for light bg */
+        body.light .kw { color:#7c3aed !important; }
+        body.light .st { color:#16794a !important; }
+        body.light .cm { color:#6b7280 !important; font-style:italic; }
+        body.light .nm { color:#b45309 !important; }
+        body.light .op { color:#57534e !important; }
+        body.light .fn { color:#0369a1 !important; }
+        body.light .cl { color:#be185d !important; }
+
+        /* Cards & surfaces */
+        body.light .bg-surface-container-low { background:#ffffff !important; border-color:#d6d3d1 !important; }
+        body.light .bg-surface-container-lowest { background:#faf8f5 !important; }
+        body.light .bg-surface-container { background:#f5f0eb !important; }
+        body.light .bg-surface { background:#faf8f5 !important; }
+        body.light .border-stone-800 { border-color:#d6d3d1 !important; }
+        body.light .border-stone-700 { border-color:#d6d3d1 !important; }
+        body.light .border-rule { border-color:#d6d3d1 !important; }
+        body.light .bg-stone-800 { background:#e7e5e4 !important; }
+        body.light .bg-stone-900 { background:#f0ece8 !important; }
+        body.light .bg-stone-900\/50 { background:rgba(231,229,228,0.5) !important; }
+        body.light .bg-outline-variant { background:#d6d3d1 !important; }
+
+        /* Primary container backgrounds (gold tints) */
+        body.light .bg-primary-container\/5 { background:rgba(146,96,10,0.05) !important; }
+        body.light .bg-primary-container\/10 { background:rgba(146,96,10,0.08) !important; }
+        body.light .bg-primary-container { background:#92600a !important; color:#fff !important; }
+
+        /* Table styles */
+        body.light .ref-table th { color:#92600a !important; }
+        body.light .ref-table td { border-bottom-color:#e7e5e4 !important; }
+    </style>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-background": "#e5e2e1",
+                        "primary-container": "#ffd43b",
+                        "surface": "#131313",
+                        "surface-container": "#201f1f",
+                        "surface-container-low": "#1c1b1b",
+                        "surface-container-lowest": "#0e0e0e",
+                        "outline-variant": "#4d4633",
+                        "background": "#131313",
+                        "accent": "#ffd43b",
+                        "rule": "#292524",
+                        "heritage-gold": "#ffd43b",
+                        "dim": "#636366"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0px",
+                        "lg": "0px",
+                        "xl": "0px"
+                    },
+                    "fontFamily": {
+                        "headline-display": ["Newsreader"],
+                        "body-md": ["Inter"],
+                        "headline-md": ["Newsreader"],
+                        "headline-lg": ["Newsreader"],
+                        "code-snippet": ["Space Grotesk"],
+                        "label-caps": ["Space Grotesk"]
+                    },
+                    "fontSize": {
+                        "headline-display": ["64px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "headline-md": ["28px", { "lineHeight": "1.3", "fontWeight": "500" }],
+                        "headline-lg": ["40px", { "lineHeight": "1.2", "fontWeight": "500" }],
+                        "code-snippet": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "label-caps": ["12px", { "lineHeight": "1", "letterSpacing": "0.1em", "fontWeight": "600" }]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+
+<body class="bg-background text-on-background font-body-md overflow-x-hidden">
+    <!-- Top Navigation -->
+    <header class="bg-[#0e0e0e] text-stone-100 sticky top-0 border-b border-stone-800 z-50">
+        <div class="max-w-[1600px] mx-auto flex justify-between items-center px-8 h-20">
+            <div class="flex items-center gap-4">
+                <button id="sidebar-toggle" class="hover:bg-stone-900 transition-all p-2" onclick="openSidebar()">
+                    <span class="material-symbols-outlined text-[#FFD43B]">menu</span>
+                </button>
+                <div class="text-2xl font-headline-display font-black uppercase tracking-tighter text-[#FFD43B]">
+                    PYTHON DSA CHEAT SHEET
+                </div>
+            </div>
+            <nav class="hidden md:flex items-center gap-8 font-headline-md tracking-tight text-stone-100 text-sm">
+                <a class="text-[#FFD43B] border-b border-[#FFD43B] pb-1" href="#">RESOURCES</a>
+                <a class="text-stone-400 hover:text-stone-200 transition-colors" href="#">SYNTAX</a>
+                <a class="text-stone-400 hover:text-stone-200 transition-colors" href="#">COMPLEXITY</a>
+            </nav>
+            <div class="flex items-center gap-4">
+                <button id="search-toggle" class="hover:bg-stone-900 transition-all p-2" onclick="openSearch()">
+                    <span class="material-symbols-outlined text-[#FFD43B]">search</span>
+                </button>
+                <button id="settings-toggle" class="hover:bg-stone-900 transition-all p-2" onclick="openSettings()">
+                    <span class="material-symbols-outlined text-[#FFD43B]">settings</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sidebar Overlay -->
+    <div id="sidebar-overlay" class="sidebar-overlay fixed inset-0 bg-black/60 z-40 backdrop-blur-sm" onclick="closeSidebar()"></div>
+
+    <!-- Sidebar Panel -->
+    <aside id="sidebar" class="sidebar-panel fixed top-0 left-0 h-full w-72 bg-[#0e0e0e] border-r border-rule z-50 flex flex-col gap-6 py-12 px-6 overflow-y-auto">
+        <div class="flex justify-between items-start">
+            <div>
+                <div class="font-headline-md font-bold text-[#FFD43B] text-lg">REFERENCE MANUAL</div>
+                <div class="text-[10px] uppercase tracking-widest text-stone-500 font-label-caps">v3.12 Standard Edition</div>
+            </div>
+            <button class="p-1 hover:bg-stone-800 transition-colors" onclick="closeSidebar()">
+                <span class="material-symbols-outlined text-stone-400 text-xl">close</span>
+            </button>
+        </div>
+        <nav id="sidebar-nav" class="flex flex-col gap-2 font-label-caps text-[11px] tracking-wide uppercase">
+            <a class="sidebar-link text-dim pl-4 py-1 border-l border-rule hover:text-accent hover:border-accent transition-all" href="#s1" data-section="s1">01 BASICS</a>
+            <a class="sidebar-link text-dim pl-4 py-1 border-l border-rule hover:text-accent hover:border-accent transition-all" href="#s2" data-section="s2">02 LISTS</a>
+            <a class="sidebar-link text-dim pl-4 py-1 border-l border-rule hover:text-accent hover:border-accent transition-all" href="#s3" data-section="s3">03 STRINGS</a>
+            <a class="sidebar-link text-dim pl-4 py-1 border-l border-rule hover:text-accent hover:border-accent transition-all" href="#s4" data-section="s4">04 DICTIONARIES</a>
+            <a class="sidebar-link text-dim pl-4 py-1 border-l border-rule hover:text-accent hover:border-accent transition-all" href="#s5" data-section="s5">05 SETS</a>
+            <a class="sidebar-link text-dim pl-4 py-1 border-l border-rule hover:text-accent hover:border-accent transition-all" href="#s6" data-section="s6">06 DEQUE</a>
+            <a class="sidebar-link text-dim pl-4 py-1 border-l border-rule hover:text-accent hover:border-accent transition-all" href="#s7" data-section="s7">07 COLLECTIONS</a>
+            <a class="sidebar-link text-dim pl-4 py-1 border-l border-rule hover:text-accent hover:border-accent transition-all" href="#s8" data-section="s8">08 SORTING</a>
+            <a class="sidebar-link text-dim pl-4 py-1 border-l border-rule hover:text-accent hover:border-accent transition-all" href="#s9" data-section="s9">09 SLICING</a>
+            <a class="sidebar-link text-dim pl-4 py-1 border-l border-rule hover:text-accent hover:border-accent transition-all" href="#s10" data-section="s10">10 COMPREHENSIONS</a>
+            <a class="sidebar-link text-dim pl-4 py-1 border-l border-rule hover:text-accent hover:border-accent transition-all" href="#s11" data-section="s11">11 BUILTINS</a>
+            <a class="sidebar-link text-dim pl-4 py-1 border-l border-rule hover:text-accent hover:border-accent transition-all" href="#s12" data-section="s12">12 ITERTOOLS</a>
+            <a class="sidebar-link text-dim pl-4 py-1 border-l border-rule hover:text-accent hover:border-accent transition-all" href="#s13" data-section="s13">13 FUNCTOOLS</a>
+            <a class="sidebar-link text-dim pl-4 py-1 border-l border-rule hover:text-accent hover:border-accent transition-all" href="#s14" data-section="s14">14 BIT OPS</a>
+            <a class="sidebar-link text-dim pl-4 py-1 border-l border-rule hover:text-accent hover:border-accent transition-all" href="#s15" data-section="s15">15 MATH</a>
+            <a class="sidebar-link text-dim pl-4 py-1 border-l border-rule hover:text-accent hover:border-accent transition-all" href="#s16" data-section="s16">16 FLOW</a>
+            <a class="sidebar-link text-dim pl-4 py-1 border-l border-rule hover:text-accent hover:border-accent transition-all" href="#s17" data-section="s17">17 OOP</a>
+            <a class="sidebar-link text-dim pl-4 py-1 border-l border-rule hover:text-accent hover:border-accent transition-all" href="#s18" data-section="s18">18 EXCEPTIONS</a>
+            <a class="sidebar-link text-dim pl-4 py-1 border-l border-rule hover:text-accent hover:border-accent transition-all" href="#s19" data-section="s19">19 COMPLEXITY</a>
+        </nav>
+        <div class="mt-auto">
+            <button class="w-full border border-[#FFD43B] text-[#FFD43B] font-label-caps py-3 hover:bg-[#FFD43B] hover:text-stone-950 transition-colors text-[10px] tracking-widest">
+                DOWNLOAD PDF
+            </button>
+        </div>
+    </aside>
+
+    <!-- Search Overlay -->
+    <div id="search-overlay" class="search-overlay" onclick="closeSearch()"></div>
+    <div id="search-panel" class="search-panel">
+        <div class="max-w-[1600px] mx-auto">
+            <div class="flex items-center gap-4">
+                <span class="material-symbols-outlined text-[#FFD43B]">search</span>
+                <input id="search-input" class="search-input" type="text" placeholder="Search sections… (Ctrl+K)" oninput="filterSections(this.value)" autocomplete="off">
+                <button class="p-1 hover:bg-stone-800 transition-colors" onclick="closeSearch()">
+                    <span class="material-symbols-outlined text-stone-400 text-xl">close</span>
+                </button>
+            </div>
+            <div id="search-results" class="search-results"></div>
+        </div>
+    </div>
+
+    <!-- Settings Overlay -->
+    <div id="settings-overlay" class="settings-overlay" onclick="closeSettings()"></div>
+    <aside id="settings-panel" class="settings-panel">
+        <div class="flex justify-between items-start">
+            <div>
+                <div class="font-headline-md font-bold text-[#FFD43B] text-lg">SETTINGS</div>
+                <div class="text-[10px] uppercase tracking-widest text-stone-500 font-label-caps">Preferences</div>
+            </div>
+            <button class="p-1 hover:bg-stone-800 transition-colors" onclick="closeSettings()">
+                <span class="material-symbols-outlined text-stone-400 text-xl">close</span>
+            </button>
+        </div>
+        <div>
+            <div class="settings-label">Font Size</div>
+            <div class="settings-toggle-group">
+                <button class="settings-toggle-btn" onclick="setFontSize('sm')" data-size="sm">S</button>
+                <button class="settings-toggle-btn active" onclick="setFontSize('md')" data-size="md">M</button>
+                <button class="settings-toggle-btn" onclick="setFontSize('lg')" data-size="lg">L</button>
+            </div>
+        </div>
+        <div>
+            <div class="settings-label">Theme</div>
+            <div class="settings-toggle-group">
+                <button class="settings-toggle-btn active" onclick="setTheme('dark')" data-theme="dark">DARK</button>
+                <button class="settings-toggle-btn" onclick="setTheme('light')" data-theme="light">LIGHT</button>
+            </div>
+        </div>
+        <div>
+            <div class="settings-label">Actions</div>
+            <button class="settings-action-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+                <span class="material-symbols-outlined" style="font-size:18px">arrow_upward</span>
+                Scroll to Top
+            </button>
+        </div>
+    </aside>
+
+    <div class="max-w-[1600px] mx-auto min-h-screen">
+        <!-- Main Content Canvas -->
+        <main class="px-8 lg:px-16 py-16 overflow-x-hidden min-w-0">
+            <!-- Hero Header Section -->
+            <section class="mb-20">
+                <div class="max-w-4xl">
+                    <h1 class="font-headline-display text-headline-display text-on-background mb-4">
+                        PYTHON <span class="text-primary-container">DSA</span>
+                    </h1>
+                    <div class="flex items-baseline gap-4 mb-8">
+                        <span class="font-label-caps text-primary-container border border-primary-container px-3 py-1 text-[10px]">EDITORIAL REFERENCE</span>
+                        <p class="font-headline-md text-headline-md text-stone-500 italic text-xl">
+                            An authoritative editorial reference for the modern Pythonista.
+                        </p>
+                    </div>
+                    <div class="h-px bg-outline-variant w-full"></div>
+                </div>
+            </section>
+
+        <!-- ────────────────────────────────────────────────────── -->
+        <!-- SECTION 1 — DATA TYPES -->
+        <!-- ────────────────────────────────────────────────────── -->
+        <section class="grid grid-cols-12 gap-8 mb-24" id="s1">
+            <!-- Section Header -->
+            <div class="col-span-12 mb-8 border-b border-stone-800 pb-4">
+                <div class="flex justify-between items-end">
+                    <h2 class="inline-block font-headline-lg text-headline-lg uppercase tracking-tight pb-2 double-underline">
+                        CORE DATA TYPES
+                    </h2>
+                    <span class="font-label-caps text-stone-500 text-[10px] mb-2">CHAPTER 01</span>
+                </div>
+            </div>
+
+            <!-- Numbers Card -->
+            <article class="col-span-12 lg:col-span-4 border border-stone-800 p-6 bg-surface-container-low flex flex-col">
+                <div class="flex justify-between items-start mb-6">
+                    <h3 class="font-headline-md text-xl text-primary-container uppercase">NUMBERS</h3>
+                    <span class="font-label-caps text-stone-600 text-[9px]">REF 1.1</span>
+                </div>
+                <div class="flex-1">
+                    <table class="w-full text-left font-body-md text-sm border-separate border-spacing-y-2">
+                        <tr class="group">
+                            <td class="font-code-snippet text-primary-container pr-4">int</td>
+                            <td class="text-stone-400 border-l border-stone-800 pl-4">Arbitrary precision</td>
+                        </tr>
+                        <tr>
+                            <td class="font-code-snippet text-primary-container pr-4">float</td>
+                            <td class="text-stone-400 border-l border-stone-800 pl-4">64-bit double</td>
+                        </tr>
+                        <tr>
+                            <td class="font-code-snippet text-primary-container pr-4">complex</td>
+                            <td class="text-stone-400 border-l border-stone-800 pl-4">3+4j</td>
+                        </tr>
+                        <tr>
+                            <td class="font-code-snippet text-primary-container pr-4">bool</td>
+                            <td class="text-stone-400 border-l border-stone-800 pl-4">Subclass of int</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="mt-6 bg-stone-900/50 border border-primary-container/10 p-4">
+                    <p class="font-body-md text-xs text-stone-300 italic leading-relaxed">
+                        <strong class="text-primary-container not-italic font-label-caps text-[9px] block mb-1">DSA TIP</strong>
+                        Python ints never overflow — use freely for large factorials. Use <code>math.isclose()</code> for float comparison.
+                    </p>
+                </div>
+            </article>
+
+            <!-- Mutability Card -->
+            <article class="col-span-12 lg:col-span-4 border border-stone-800 p-6 bg-surface-container-low flex flex-col">
+                <div class="flex justify-between items-start mb-6">
+                    <h3 class="font-headline-md text-xl text-primary-container uppercase">MUTABILITY</h3>
+                    <span class="font-label-caps text-stone-600 text-[9px]">REF 1.2</span>
+                </div>
+                <div class="flex-1 space-y-4">
+                    <div>
+                        <h4 class="font-label-caps text-[10px] text-stone-500 mb-2 uppercase tracking-widest">Immutable (Hashable)</h4>
+                        <div class="font-code-snippet text-xs text-stone-300 bg-stone-950 p-2 border-l border-primary-container/30">
+                            int, float, str, tuple, frozenset
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-label-caps text-[10px] text-stone-500 mb-2 uppercase tracking-widest">Mutable</h4>
+                        <div class="font-code-snippet text-xs text-stone-300 bg-stone-950 p-2 border-l border-stone-700">
+                            list, dict, set, bytearray
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-6 border-t border-stone-800 pt-4">
+                    <p class="text-[11px] text-stone-500 leading-tight">
+                        Only hashable objects can be dict keys or set members.
+                    </p>
+                </div>
+            </article>
+
+            <!-- Conversion Card -->
+            <article class="col-span-12 lg:col-span-4 border border-stone-800 p-6 bg-surface-container-lowest">
+                <h3 class="font-headline-md text-xl mb-6 uppercase">CONVERSIONS</h3>
+                <div class="space-y-3">
+                    <div class="group">
+                        <div class="text-stone-600 mb-1 text-[9px] uppercase font-label-caps">Int to Binary</div>
+                        <pre class="bg-stone-950 p-2 border-l border-primary-container text-xs font-code-snippet text-stone-200">int("1010", 2)  # → 10</pre>
+                    </div>
+                    <div class="group">
+                        <div class="text-stone-600 mb-1 text-[9px] uppercase font-label-caps">Char to ASCII</div>
+                        <pre class="bg-stone-950 p-2 border-l border-primary-container text-xs font-code-snippet text-stone-200">ord('a')       # → 97</pre>
+                    </div>
+                    <div class="group">
+                        <div class="text-stone-600 mb-1 text-[9px] uppercase font-label-caps">List to Set</div>
+                        <pre class="bg-stone-950 p-2 border-l border-primary-container text-xs font-code-snippet text-stone-200">set([1, 2, 2]) # → {1, 2}</pre>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Truthiness & Identity -->
+            <div class="col-span-12 grid grid-cols-1 md:grid-cols-2 gap-8 mt-4">
+                <article class="border border-stone-800 p-6 bg-stone-950/30">
+                    <h3 class="font-headline-md text-lg text-primary-container mb-4">TRUTHINESS RULES</h3>
+                    <pre class="bg-stone-950 p-4 border border-stone-800 text-xs font-code-snippet leading-relaxed">
+<span class="cm"># Falsy values:</span>
+<span class="kw">None</span>, <span class="kw">False</span>, <span class="nm">0</span>, <span class="nm">0.0</span>, <span class="st">""</span>, [], (), {}, <span class="fn">set</span>()
+
+<span class="cm"># DSA pattern:</span>
+<span class="kw">if not</span> stack: <span class="cm"># is empty</span>
+<span class="kw">if</span> stack:     <span class="cm"># has items</span></pre>
+                </article>
+                <article class="border border-stone-800 p-6 bg-stone-950/30">
+                    <h3 class="font-headline-md text-lg text-primary-container mb-4">IDENTITY (IS VS ==)</h3>
+                    <pre class="bg-stone-950 p-4 border border-stone-800 text-xs font-code-snippet leading-relaxed">
+a = [1, 2]; b = [1, 2]
+a == b <span class="cm"># True (Values match)</span>
+a <span class="kw">is</span> b <span class="cm"># False (References differ)</span></pre>
+                </article>
+            </div>
+        </section>
+
+        <!-- ────────────────────────────────────────────────────── -->
+        <!-- SECTION 2 — LIST -->
+        <!-- ────────────────────────────────────────────────────── -->
+        <section class="grid grid-cols-12 gap-8 mb-24" id="s2">
+            <!-- Section Header -->
+            <div class="col-span-12 mb-8 border-b border-stone-800 pb-4">
+                <div class="flex justify-between items-end">
+                    <h2 class="inline-block font-headline-lg text-headline-lg uppercase tracking-tight pb-2 double-underline">
+                        LIST — DYNAMIC ARRAY
+                    </h2>
+                    <span class="font-label-caps text-stone-500 text-[10px] mb-2">CHAPTER 02</span>
+                </div>
+                <div class="mt-4 bg-primary-container/5 border-l-2 border-primary-container p-4">
+                    <p class="font-body-md text-sm text-stone-400 italic leading-relaxed">
+                        Python's <code>list</code> is a dynamic array (like Java's ArrayList). It supports O(1) index access,
+                        O(1) amortized appends, but O(n) insert/delete at arbitrary positions.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Creation & Basic Operations -->
+            <article class="col-span-12 lg:col-span-6 border border-stone-800 p-6 bg-surface-container-low flex flex-col">
+                <div class="flex justify-between items-start mb-4">
+                    <h3 class="font-headline-md text-xl text-primary-container uppercase">CREATION & BASIC OPS</h3>
+                    <span class="font-label-caps text-stone-600 text-[9px]">REF 2.1</span>
+                </div>
+                <pre class="bg-stone-950 p-4 border border-stone-800 text-xs font-code-snippet leading-relaxed overflow-x-auto">
+lst = []                   <span class="cm"># empty</span>
+lst = [<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>]
+lst = [<span class="nm">0</span>] * <span class="nm">5</span>             <span class="cm"># [0,0,0,0,0]</span>
+lst = <span class="fn">list</span>(<span class="fn">range</span>(<span class="nm">10</span>))      <span class="cm"># [0..9]</span>
+
+<span class="cm"># 2D list — CORRECT way</span>
+grid = [[<span class="nm">0</span>]*cols <span class="kw">for</span> _ <span class="kw">in</span> <span class="fn">range</span>(rows)]
+
+lst.<span class="fn">append</span>(x)              <span class="cm"># O(1) add to end</span>
+lst.<span class="fn">pop</span>()                  <span class="cm"># O(1) remove from end</span>
+lst.<span class="fn">pop</span>(<span class="nm">0</span>)                <span class="cm"># O(n) remove from front</span>
+lst.<span class="fn">insert</span>(<span class="nm">i</span>, x)           <span class="cm"># O(n)</span>
+lst.<span class="fn">extend</span>(iterable)       <span class="cm"># O(k)</span></pre>
+                <div class="mt-4 p-3 bg-stone-900 border-l-2 border-stone-700">
+                    <p class="text-[10px] text-stone-500 font-label-caps tracking-wider uppercase mb-1">Stack (LIFO) Pattern</p>
+                    <code class="text-xs text-stone-300">stack.append(x) | stack.pop() | stack[-1] (peek)</code>
+                </div>
+            </article>
+
+            <!-- Searching & Sorting -->
+            <article class="col-span-12 lg:col-span-6 border border-stone-800 p-6 bg-surface-container-low flex flex-col">
+                <div class="flex justify-between items-start mb-4">
+                    <h3 class="font-headline-md text-xl text-primary-container uppercase">SEARCHING & SORTING</h3>
+                    <span class="font-label-caps text-stone-600 text-[9px]">REF 2.2</span>
+                </div>
+                <pre class="bg-stone-950 p-4 border border-stone-800 text-xs font-code-snippet leading-relaxed overflow-x-auto">
+x <span class="kw">in</span> lst                  <span class="cm"># O(n) linear search</span>
+
+<span class="cm"># Sorting — Timsort O(n log n)</span>
+lst.<span class="fn">sort</span>()                 <span class="cm"># in-place</span>
+lst.<span class="fn">sort</span>(reverse=<span class="kw">True</span>)
+lst.<span class="fn">sort</span>(key=<span class="kw">lambda</span> x: x[<span class="nm">1</span>])
+
+<span class="cm"># Multi-key sort:</span>
+lst.<span class="fn">sort</span>(key=<span class="kw">lambda</span> x: (x[<span class="nm">0</span>], <span class="op">-</span>x[<span class="nm">1</span>]))
+
+<span class="cm"># sorted() returns new list</span>
+new = <span class="fn">sorted</span>(lst, key=<span class="fn">len</span>)</pre>
+            </article>
+
+            <!-- Binary Search & Patterns -->
+            <article class="col-span-12 border border-stone-800 p-6 bg-surface-container-low">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="font-headline-md text-lg text-primary-container uppercase mb-4">BINARY SEARCH</h3>
+                        <pre class="bg-stone-950 p-4 border border-stone-800 text-xs font-code-snippet leading-relaxed">
+<span class="kw">import</span> bisect
+lst = [<span class="nm">1</span>, <span class="nm">3</span>, <span class="nm">5</span>, <span class="nm">7</span>, <span class="nm">9</span>]
+
+<span class="cm"># Find insertion point</span>
+bisect.<span class="fn">bisect_left</span>(lst, <span class="nm">5</span>)   <span class="cm"># → 2</span>
+bisect.<span class="fn">bisect_right</span>(lst, <span class="nm">5</span>)  <span class="cm"># → 3</span>
+
+<span class="cm"># Insert maintaining sort</span>
+bisect.<span class="fn">insort</span>(lst, <span class="nm">4</span>)        <span class="cm"># [1,3,4,5,7,9]</span></pre>
+                    </div>
+                    <div>
+                        <h3 class="font-headline-md text-lg text-primary-container uppercase mb-4">USEFUL PATTERNS</h3>
+                        <pre class="bg-stone-950 p-4 border border-stone-800 text-xs font-code-snippet leading-relaxed">
+<span class="cm"># Flatten nested list</span>
+flat = [x <span class="kw">for</span> row <span class="kw">in</span> matrix <span class="kw">for</span> x <span class="kw">in</span> row]
+
+<span class="cm"># Zip & Enumerate</span>
+pairs = <span class="fn">list</span>(<span class="fn">zip</span>(a, b))
+<span class="kw">for</span> i, v <span class="kw">in</span> <span class="fn">enumerate</span>(lst): ...
+
+<span class="cm"># All / Any</span>
+<span class="fn">all</span>(x > <span class="nm">0</span> <span class="kw">for</span> x <span class="kw">in</span> lst)
+<span class="fn">any</span>(x > <span class="nm">0</span> <span class="kw">for</span> x <span class="kw">in</span> lst)</pre>
+                    </div>
+                </div>
+            </article>
+        </section>
+
+        <!-- ────────────────────────────────────────────────────── -->
+        <!-- SECTION 3 — STRING -->
+        <!-- ────────────────────────────────────────────────────── -->
+        <section class="grid grid-cols-12 gap-8 mb-24" id="s3">
+            <div class="col-span-12 mb-8 border-b border-stone-800 pb-4">
+                <div class="flex justify-between items-end">
+                    <h2 class="inline-block font-headline-lg text-headline-lg uppercase tracking-tight pb-2 double-underline">
+                        STRING — UNICODE SEQUENCE
+                    </h2>
+                    <span class="font-label-caps text-stone-500 text-[10px] mb-2">CHAPTER 03</span>
+                </div>
+            </div>
+
+            <article class="col-span-12 lg:col-span-7 border border-stone-800 p-6 bg-surface-container-low">
+                <h3 class="font-headline-md text-xl text-primary-container uppercase mb-6">COMMON METHODS</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="space-y-3">
+                        <div class="font-code-snippet text-xs bg-stone-950 p-2 border-l border-primary-container">
+                            s.<span class="fn">strip</span>() <span class="cm"># Trim whitespace</span>
+                        </div>
+                        <div class="font-code-snippet text-xs bg-stone-950 p-2 border-l border-primary-container">
+                            s.<span class="fn">split</span>(<span class="st">","</span>) <span class="cm"># To list</span>
+                        </div>
+                        <div class="font-code-snippet text-xs bg-stone-950 p-2 border-l border-primary-container">
+                            <span class="st">" "</span>.<span class="fn">join</span>(lst) <span class="cm"># List to string</span>
+                        </div>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="font-code-snippet text-xs bg-stone-950 p-2 border-l border-stone-700">
+                            s.<span class="fn">startswith</span>(<span class="st">"prefix"</span>)
+                        </div>
+                        <div class="font-code-snippet text-xs bg-stone-950 p-2 border-l border-stone-700">
+                            s.<span class="fn">replace</span>(<span class="st">"old"</span>, <span class="st">"new"</span>)
+                        </div>
+                        <div class="font-code-snippet text-xs bg-stone-950 p-2 border-l border-stone-700">
+                            s[<span class="nm">1</span>:<span class="nm">4</span>], s[:<span class="op">:</span><span class="op">-</span><span class="nm">1</span>] <span class="cm"># Slice/Rev</span>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <article class="col-span-12 lg:col-span-5 border border-stone-800 p-6 bg-surface-container-lowest">
+                <h3 class="font-headline-md text-xl mb-6 uppercase">IMMUTABILITY</h3>
+                <p class="font-body-md text-xs text-stone-400 mb-4 leading-relaxed">
+                    Strings are <strong class="text-primary-container">immutable</strong>. To modify, convert to list or use slicing.
+                </p>
+                <pre class="bg-stone-950 p-3 border border-stone-800 text-xs font-code-snippet">
+lst = <span class="fn">list</span>(s)
+lst[<span class="nm">0</span>] = <span class="st">'X'</span>
+s = <span class="st">""</span>.<span class="fn">join</span>(lst)</pre>
+                <div class="mt-4 border-t border-stone-800 pt-4">
+                    <div class="text-stone-600 mb-1 text-[9px] uppercase font-label-caps">Modern Formatting</div>
+                    <code class="text-xs text-primary-container">f"Result: {val:.2f}"</code>
+                </div>
+            </article>
+        </section>
+
+        <!-- ────────────────────────────────────────────────────── -->
+        <!-- SECTION 4 — DICTIONARY -->
+        <!-- ────────────────────────────────────────────────────── -->
+        <section id="s4" class="grid grid-cols-12 gap-px bg-stone-800 border-b border-stone-800">
+            <header class="col-span-12 p-8 bg-surface-container-lowest">
+                <div class="flex items-center gap-4 mb-4">
+                    <span class="px-3 py-1 bg-primary-container text-stone-950 font-label-caps text-[10px] tracking-widest">CHAPTER 04</span>
+                    <span class="h-px flex-1 bg-stone-800"></span>
+                    <span class="text-stone-500 font-label-caps text-[10px] tracking-widest uppercase">Broadsheet Technical Reference</span>
+                </div>
+                <h2 class="font-headline-lg text-4xl mb-4 tracking-tight">DICTIONARY · <span class="text-stone-500">HASH MAP</span></h2>
+                <p class="font-body-lg text-stone-400 max-w-2xl leading-relaxed">
+                    Python dictionaries maintain insertion order (since 3.7+). They are highly optimized Hash Maps providing average O(1) complexity for search, insertion, and deletion.
+                </p>
+            </header>
+
+            <article class="col-span-12 lg:col-span-7 border border-stone-800 p-6 bg-surface-container-low">
+                <h3 class="font-headline-md text-xl text-primary-container uppercase mb-6">CORE OPERATIONS</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <div class="text-stone-500 text-[10px] uppercase font-label-caps mb-3">Creation & Access</div>
+                        <pre class="bg-stone-950 p-3 border-l border-primary-container text-xs font-code-snippet space-y-1">
+d = {<span class="st">'a'</span>: <span class="nm">1</span>, <span class="st">'b'</span>: <span class="nm">2</span>}
+d.<span class="fn">get</span>(<span class="st">'key'</span>, <span class="nm">0</span>)  <span class="cm"># Safe read</span>
+d[<span class="st">'key'</span>] = val    <span class="cm"># Insert/Update</span>
+<span class="kw">del</span> d[<span class="st">'key'</span>]      <span class="cm"># Delete</span></pre>
+                    </div>
+                    <div>
+                        <div class="text-stone-500 text-[10px] uppercase font-label-caps mb-3">Iteration</div>
+                        <pre class="bg-stone-950 p-3 border-l border-stone-700 text-xs font-code-snippet space-y-1">
+<span class="kw">for</span> k, v <span class="kw">in</span> d.<span class="fn">items</span>():
+<span class="kw">for</span> k <span class="kw">in</span> d.<span class="fn">keys</span>():
+<span class="kw">for</span> v <span class="kw">in</span> d.<span class="fn">values</span>():</pre>
+                    </div>
+                </div>
+                <div class="mt-6 pt-6 border-t border-stone-800">
+                    <div class="text-stone-500 text-[10px] uppercase font-label-caps mb-3">Modern Merging (3.9+)</div>
+                    <code class="text-xs text-primary-container font-code-snippet">merged = d1 | d2 <span class="text-stone-600 ml-4"># d2 values overwrite d1</span></code>
+                </div>
+            </article>
+
+            <article class="col-span-12 lg:col-span-5 border border-stone-800 p-6 bg-surface-container-lowest">
+                <h3 class="font-headline-md text-xl mb-6 uppercase">DSA SPECIALS</h3>
+                <div class="space-y-6">
+                    <div>
+                        <div class="flex items-center gap-2 mb-2 text-primary-container">
+                            <span class="text-xs font-bold font-label-caps">defaultdict</span>
+                        </div>
+                        <p class="text-[11px] text-stone-500 mb-2">Auto-initializes missing keys. Essential for frequency maps and graphs.</p>
+                        <pre class="bg-stone-950 p-3 border border-stone-800 text-xs font-code-snippet">
+<span class="kw">from</span> collections <span class="kw">import</span> defaultdict
+adj = <span class="fn">defaultdict</span>(<span class="fn">list</span>)
+adj[node].<span class="fn">append</span>(neighbor)</pre>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2 mb-2 text-primary-container">
+                            <span class="text-xs font-bold font-label-caps">Counter</span>
+                        </div>
+                        <p class="text-[11px] text-stone-500 mb-2">High-performance counting tool. Solves anagram and frequency problems in one line.</p>
+                        <pre class="bg-stone-950 p-3 border border-stone-800 text-xs font-code-snippet">
+<span class="kw">from</span> collections <span class="kw">import</span> Counter
+c = <span class="fn">Counter</span>(<span class="st">"aabbbcc"</span>)
+<span class="kw">return</span> c.<span class="fn">most_common</span>(<span class="nm">1</span>)</pre>
+                    </div>
+                </div>
+            </article>
+        </section>
+
+        <!-- ────────────────────────────────────────────────────── -->
+        <!-- SECTION 5 — SET -->
+        <!-- ────────────────────────────────────────────────────── -->
+        <section id="s5" class="grid grid-cols-12 gap-px bg-stone-800 border-b border-stone-800">
+            <header class="col-span-12 lg:col-span-4 p-8 bg-surface-container-lowest flex flex-col justify-center">
+                <div class="flex items-center gap-4 mb-4">
+                    <span class="px-3 py-1 bg-stone-800 text-stone-300 font-label-caps text-[10px] tracking-widest uppercase">Chapter 05</span>
+                </div>
+                <h2 class="font-headline-lg text-4xl mb-4 tracking-tight">SET · <span class="text-stone-500 text-2xl">HASH SET</span></h2>
+                <p class="font-body-md text-stone-400 leading-relaxed text-xs">
+                    Unordered collection of unique elements. Average O(1) membership testing. Based on the same hash table technology as dictionaries.
+                </p>
+                <div class="mt-6 p-4 bg-stone-950 border border-stone-800 italic text-[10px] text-stone-500">
+                    "Use sets for deduplication and fast membership checks (in) instead of lists."
+                </div>
+            </header>
+
+            <article class="col-span-12 lg:col-span-4 border border-stone-800 p-6 bg-surface-container-low">
+                <h3 class="font-headline-md text-lg text-primary-container uppercase mb-6">OPERATIONS</h3>
+                <pre class="bg-stone-950 p-4 text-xs font-code-snippet space-y-2 border-l border-stone-700">
+s.<span class="fn">add</span>(x)       <span class="cm"># Add element</span>
+s.<span class="fn">remove</span>(x)    <span class="cm"># Error if missing</span>
+s.<span class="fn">discard</span>(x)   <span class="cm"># Safe removal</span>
+x <span class="kw">in</span> s         <span class="cm"># O(1) Lookup</span>
+
+<span class="cm"># Set Logic</span>
+a | b <span class="cm"># Union</span>
+a & b <span class="cm"># Intersection</span>
+a - b <span class="cm"># Difference</span>
+a ^ b <span class="cm"># Symmetric Diff</span></pre>
+            </article>
+
+            <article class="col-span-12 lg:col-span-4 border border-stone-800 p-6 bg-surface-container-lowest">
+                <h3 class="font-headline-md text-lg mb-6 uppercase">DSA PATTERNS</h3>
+                <div class="space-y-4">
+                    <div class="bg-stone-950 p-4 border border-stone-800">
+                        <div class="text-[10px] uppercase font-label-caps text-stone-500 mb-2">Cycle Detection</div>
+                        <pre class="text-xs font-code-snippet">
+seen = <span class="fn">set</span>()
+<span class="kw">if</span> node <span class="kw">in</span> seen: <span class="kw">return True</span>
+seen.<span class="fn">add</span>(node)</pre>
+                    </div>
+                    <div class="bg-stone-950 p-4 border border-stone-800">
+                        <div class="text-[10px] uppercase font-label-caps text-stone-500 mb-2">Deduplication</div>
+                        <pre class="text-xs font-code-snippet">
+unique = <span class="fn">list</span>(<span class="fn">set</span>(items))</pre>
+                    </div>
+                </div>
+            </article>
+        </section>
+
+        <!-- ────────────────────────────────────────────────────── -->
+        <!-- SECTION 6 — DEQUE / STACK / QUEUE -->
+        <!-- ────────────────────────────────────────────────────── -->
+        <section id="s6" class="grid grid-cols-12 gap-px bg-stone-800 border-b border-stone-800">
+            <header class="col-span-12 p-8 bg-surface-container-lowest">
+                <div class="flex items-center gap-4 mb-4">
+                    <span class="px-3 py-1 bg-primary-container text-stone-950 font-label-caps text-[10px] tracking-widest uppercase">Chapter 06</span>
+                    <span class="h-px flex-1 bg-stone-800"></span>
+                    <span class="text-stone-500 font-label-caps text-[10px] tracking-widest uppercase">Linear Structures</span>
+                </div>
+                <h2 class="font-headline-lg text-4xl mb-2 tracking-tight">DEQUE & QUEUE</h2>
+                <p class="font-body-md text-stone-400 text-xs uppercase tracking-widest">Double-Ended Queue · Stack · Priority Queue</p>
+            </header>
+
+            <article class="col-span-12 lg:col-span-7 border border-stone-800 p-6 bg-surface-container-low">
+                <h3 class="font-headline-md text-xl text-primary-container uppercase mb-6 text-stone-300">COLLECTIONS.DEQUE</h3>
+                <div class="bg-stone-950 p-4 border-l-2 border-primary-container mb-6 italic text-[11px] text-stone-400">
+                    "Always use deque for queues! List pop(0) is O(n), deque popleft() is O(1)."
+                </div>
+                <pre class="bg-stone-950 p-4 text-xs font-code-snippet border border-stone-800">
+<span class="kw">from</span> collections <span class="kw">import</span> deque
+dq = <span class="fn">deque</span>([<span class="nm">1</span>,<span class="nm">2</span>,<span class="nm">3</span>])
+
+dq.<span class="fn">append</span>(x)      <span class="cm"># Push right</span>
+dq.<span class="fn">appendleft</span>(x)  <span class="cm"># Push left</span>
+dq.<span class="fn">pop</span>()          <span class="cm"># Pop right</span>
+dq.<span class="fn">popleft</span>()      <span class="cm"># Pop left (O(1))</span>
+
+<span class="cm"># BFS Pattern</span>
+queue = <span class="fn">deque</span>([root])
+<span class="kw">while</span> queue:
+    node = queue.<span class="fn">popleft</span>()</pre>
+            </article>
+
+            <article class="col-span-12 lg:col-span-5 border border-stone-800 p-6 bg-surface-container-lowest">
+                <h3 class="font-headline-md text-xl mb-6 uppercase">SLIDING WINDOW</h3>
+                <p class="text-[11px] text-stone-500 mb-4 leading-relaxed">
+                    A fixed-size deque auto-evicts old elements, making it perfect for sliding window analysis.
+                </p>
+                <pre class="bg-stone-950 p-4 text-xs font-code-snippet border border-stone-800">
+window = <span class="fn">deque</span>(maxlen=k)
+<span class="kw">for</span> x <span class="kw">in</span> nums:
+<span class="cm"># Dijkstra pattern:</span>
+dist = {start: <span class="nm">0</span>}
+pq = [(0, start)]
+<span class="kw">while</span> pq:
+    d, u = heapq.<span class="fn">heappop</span>(pq)
+    <span class="kw">if</span> d > dist.<span class="fn">get</span>(u, <span class="fn">float</span>(<span class="st">'inf'</span>)):
+        <span class="kw">continue</span>
+    <span class="kw">for</span> v, w <span class="kw">in</span> graph[u]:
+        nd = d + w
+        <span class="kw">if</span> nd < dist.<span class="fn">get</span>(v, <span class="fn">float</span>(<span class="st">'inf'</span>)):
+            dist[v] = nd
+            heapq.<span class="fn">heappush</span>(pq, (nd, v))
+
+<span class="cm"># Tie-breaking with counter (avoid comparing objects):</span>
+counter = <span class="nm">0</span>
+heapq.<span class="fn">heappush</span>(h, (priority, counter, item))
+counter += <span class="nm">1</span>
+
+<span class="cm"># Merge K sorted lists:</span>
+<span class="fn">list</span>(heapq.<span class="fn">merge</span>(*sorted_lists))</pre>
+            </article>
+        </section>
+
+        <!-- ────────────────────────────────────────────────────── -->
+        <!-- SECTION 7 — COLLECTIONS MODULE -->
+        <!-- ────────────────────────────────────────────────────── -->
+        <section class="grid grid-cols-12 gap-8 mb-24" id="s7">
+            <header class="col-span-12 mb-8 border-b border-rule pb-4">
+                <div class="flex justify-between items-end">
+                    <h2 class="inline-block font-headline-lg text-headline-lg uppercase tracking-tight pb-2 double-underline">
+                        Collections Module
+                    </h2>
+                    <span class="font-label-caps text-stone-500 text-[10px] mb-2">CHAPTER 07</span>
+                </div>
+            </header>
+
+            <article class="col-span-12 lg:col-span-6 border border-rule p-6 bg-surface-container-low">
+                <div class="flex justify-between items-start mb-6">
+                    <h3 class="font-headline-md text-xl text-accent uppercase">Counters & Defaults</h3>
+                    <span class="font-label-caps text-dim text-[9px]">REF 7.1</span>
+                </div>
+                <pre class="font-code-snippet bg-surface-container-lowest p-4 border border-rule"><code><span class="kw">from</span> collections <span class="kw">import</span> Counter, defaultdict
+
+<span class="cm"># Frequency counting</span>
+c = <span class="fn">Counter</span>(<span class="st">"aabbbcc"</span>)
+c.<span class="fn">most_common</span>(<span class="nm">2</span>)  <span class="cm"># [('b',3),('a',2)]</span>
+
+<span class="cm"># Auto-init missing keys</span>
+adj = <span class="fn">defaultdict</span>(<span class="fn">list</span>)
+adj[u].<span class="fn">append</span>(v)</code></pre>
+            </article>
+
+            <article class="col-span-12 lg:col-span-6 border border-rule p-6 bg-surface-container-low">
+                <div class="flex justify-between items-start mb-6">
+                    <h3 class="font-headline-md text-xl text-accent uppercase">Formatting & Bases</h3>
+                    <span class="font-label-caps text-dim text-[9px]">REF 7.2</span>
+                </div>
+                <pre class="font-code-snippet bg-surface-container-lowest p-4 border border-rule"><code>f<span class="st">"{255:b}"</span>       <span class="cm"># 11111111 (binary)</span>
+f<span class="st">"{255:x}"</span>       <span class="cm"># ff (hex)</span>
+f<span class="st">"{x = }"</span>        <span class="cm"># x = 42 (debug!)</span>
+
+<span class="cm"># Number bases</span>
+<span class="fn">bin</span>(<span class="nm">42</span>)  <span class="cm"># '0b101010'</span>
+<span class="fn">hex</span>(<span class="nm">42</span>)  <span class="cm"># '0x2a'</span>
+<span class="fn">int</span>(<span class="st">'101010'</span>, <span class="nm">2</span>)  <span class="cm"># 42</span></code></pre>
+            </article>
+        </section>
+
+        <!-- ────────────────────────────────────────────────────── -->
+        <!-- SECTION 8 — SORTING -->
+        <!-- ────────────────────────────────────────────────────── -->
+        <section id="s8" class="grid grid-cols-12 gap-px bg-stone-800 border-b border-stone-800">
+            <header class="col-span-12 p-8 bg-surface-container-lowest">
+                <div class="flex items-center gap-4 mb-4">
+                    <span class="px-3 py-1 bg-primary-container text-stone-950 font-label-caps text-[10px] tracking-widest uppercase">Chapter 08</span>
+                    <span class="h-px flex-1 bg-stone-800"></span>
+                    <span class="text-stone-500 font-label-caps text-[10px] tracking-widest uppercase">Algorithms: Timsort · Stable</span>
+                </div>
+                <h2 class="font-headline-lg text-4xl mb-4 tracking-tight">SORTING · <span class="text-stone-500 text-2xl uppercase">Ordering Logic</span></h2>
+                <p class="font-body-lg text-stone-400 max-w-2xl leading-relaxed">
+                    Python uses Timsort—a hybrid of Merge and Insertion sort. Worst case O(n log n), nearly-sorted O(n). All built-in sorts are <strong>stable</strong>.
+                </p>
+            </header>
+
+            <article class="col-span-12 lg:col-span-7 border border-stone-800 p-6 bg-surface-container-low">
+                <h3 class="font-headline-md text-xl text-primary-container uppercase mb-6 text-stone-300">METHODS</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <div class="text-[10px] uppercase font-label-caps text-stone-500 mb-3 tracking-wider">In-Place: .sort()</div>
+                        <pre class="bg-stone-950 p-4 text-xs font-code-snippet border-l border-primary-container">
+lst.<span class="fn">sort</span>()
+lst.<span class="fn">sort</span>(reverse=<span class="kw">True</span>)
+lst.<span class="fn">sort</span>(key=<span class="kw">len</span>)</pre>
+                    </div>
+                    <div>
+                        <div class="text-[10px] uppercase font-label-caps text-stone-500 mb-3 tracking-wider">Functional: sorted()</div>
+                        <pre class="bg-stone-950 p-4 text-xs font-code-snippet border-l border-stone-700">
+new = <span class="fn">sorted</span>(iterable)
+new = <span class="fn">sorted</span>(d.<span class="fn">items</span>(), 
+             key=<span class="kw">lambda</span> x: x[<span class="nm">1</span>])</pre>
+                    </div>
+                </div>
+                <div class="mt-8 border-t border-stone-800 pt-6">
+                    <div class="text-[10px] uppercase font-label-caps text-stone-600 mb-3 tracking-tighter">Multi-Key Sorting</div>
+                    <code class="text-xs text-primary-container font-code-snippet">lst.<span class="fn">sort</span>(key=<span class="kw">lambda</span> x: (<span class="op">-</span>x[<span class="nm">0</span>], x[<span class="nm">1</span>])) <span class="text-stone-600 ml-4"># Primary DESC, Secondary ASC</span></code>
+                </div>
+            </article>
+
+            <article class="col-span-12 lg:col-span-5 border border-stone-800 p-6 bg-surface-container-lowest">
+                <h3 class="font-headline-md text-xl mb-6 uppercase">CUSTOM COMPARATORS</h3>
+                <p class="text-[11px] text-stone-500 mb-4 leading-relaxed">
+                    Use <code class="text-stone-400">cmp_to_key</code> for complex logic that doesn't fit a simple key function.
+                </p>
+                <pre class="bg-stone-950 p-4 text-xs font-code-snippet border border-stone-800">
+<span class="kw">from</span> functools <span class="kw">import</span> cmp_to_key
+
+<span class="kw">def</span> <span class="fn">compare</span>(a, b):
+    <span class="kw">if</span> <span class="fn">str</span>(a)+<span class="fn">str</span>(b) > <span class="fn">str</span>(b)+<span class="fn">str</span>(a):
+        <span class="kw">return</span> <span class="nm">1</span>
+    <span class="kw">return</span> <span class="op">-</span><span class="nm">1</span>
+
+nums.<span class="fn">sort</span>(key=<span class="fn">cmp_to_key</span>(compare))</pre>
+            </article>
+        </section>
+
+        <!-- ────────────────────────────────────────────────────── -->
+        <!-- SECTION 9 — SLICING & INDEXING -->
+        <!-- ────────────────────────────────────────────────────── -->
+        <section id="s9" class="grid grid-cols-12 gap-px bg-stone-800 border-b border-stone-800">
+            <header class="col-span-12 lg:col-span-4 p-8 bg-surface-container-lowest flex flex-col justify-center">
+                <div class="flex items-center gap-4 mb-4">
+                    <span class="px-3 py-1 bg-stone-800 text-stone-300 font-label-caps text-[10px] tracking-widest uppercase">Chapter 09</span>
+                </div>
+                <h2 class="font-headline-lg text-4xl mb-4 tracking-tight">SLICING · <span class="text-stone-500 text-2xl uppercase">Sequences</span></h2>
+                <p class="font-body-md text-stone-400 leading-relaxed text-xs">
+                    Syntax: <code class="text-primary-container">[start:stop:step]</code>. Stop is exclusive. Step -1 for reversal.
+                </p>
+            </header>
+
+            <article class="col-span-12 lg:col-span-4 border border-stone-800 p-6 bg-surface-container-low">
+                <h3 class="font-headline-md text-lg text-primary-container uppercase mb-6">COMMON PATTERNS</h3>
+                <pre class="bg-stone-950 p-4 text-xs font-code-snippet space-y-2 border-l border-primary-container">
+s[<span class="nm">0</span>]      <span class="cm"># First element</span>
+s[<span class="op">-</span><span class="nm">1</span>]     <span class="cm"># Last element</span>
+s[::<span class="op">-</span><span class="nm">1</span>]   <span class="cm"># Full reversal</span>
+s[:<span class="nm">3</span>]     <span class="cm"># First 3 (0,1,2)</span>
+s[<span class="nm">2</span>:]     <span class="cm"># From index 2 to end</span>
+s[::<span class="nm">2</span>]    <span class="cm"># Every second element</span></pre>
+            </article>
+
+            <article class="col-span-12 lg:col-span-4 border border-stone-800 p-6 bg-surface-container-lowest">
+                <h3 class="font-headline-md text-lg mb-6 uppercase">UNPACKING</h3>
+                <div class="space-y-4">
+                    <pre class="bg-stone-950 p-4 text-xs font-code-snippet border border-stone-800">
+a, b, c = [<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>]
+first, *rest = [<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>, <span class="nm">4</span>]
+<span class="cm"># 1, [2, 3, 4]</span>
+
+a, b = b, a  <span class="cm"># The Swap</span></pre>
+                    <div class="p-4 bg-stone-950 border border-stone-800">
+                        <div class="text-[9px] uppercase font-label-caps text-stone-600 mb-2 tracking-widest italic">The Walrus (3.8+)</div>
+                        <code class="text-[10px] text-primary-container font-code-snippet">if (n := len(a)) > 0: ...</code>
+                    </div>
+                </div>
+            </article>
+        </section>
+
+        <!-- ────────────────────────────────────────────────────── -->
+        <!-- SECTION 10 — COMPREHENSIONS -->
+        <!-- ────────────────────────────────────────────────────── -->
+        <section id="s10" class="grid grid-cols-12 gap-px bg-stone-800 border-b border-stone-800">
+            <header class="col-span-12 p-8 bg-surface-container-lowest">
+                <div class="flex items-center gap-4 mb-4">
+                    <span class="px-3 py-1 bg-primary-container text-stone-950 font-label-caps text-[10px] tracking-widest uppercase">Chapter 10</span>
+                    <span class="h-px flex-1 bg-stone-800"></span>
+                    <span class="text-stone-500 font-label-caps text-[10px] tracking-widest uppercase">Syntactic Sugar</span>
+                </div>
+                <h2 class="font-headline-lg text-4xl mb-2 tracking-tight uppercase">Comprehensions</h2>
+                <p class="font-body-md text-stone-400 text-xs tracking-widest italic">Declarative creation of containers.</p>
+            </header>
+
+            <article class="col-span-12 lg:col-span-7 border border-stone-800 p-6 bg-surface-container-low">
+                <h3 class="font-headline-md text-xl text-stone-300 uppercase mb-6">TYPES</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <div class="text-[10px] uppercase font-label-caps text-stone-500 mb-3 tracking-wider italic">List / Set</div>
+                        <pre class="bg-stone-950 p-4 text-xs font-code-snippet border border-stone-800">
+[x**<span class="nm">2</span> <span class="kw">for</span> x <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">5</span>)]
+{x % <span class="nm">2</span> <span class="kw">for</span> x <span class="kw">in</span> nums}
+<span class="cm"># Filtered</span>
+[x <span class="kw">for</span> x <span class="kw">in</span> lst <span class="kw">if</span> x > <span class="nm">0</span>]</pre>
+                    </div>
+                    <div>
+                        <div class="text-[10px] uppercase font-label-caps text-stone-500 mb-3 tracking-wider italic">Dict / Generator</div>
+                        <pre class="bg-stone-950 p-4 text-xs font-code-snippet border border-stone-800">
+{k: v <span class="kw">for</span> k, v <span class="kw">in</span> items}
+<span class="cm"># Lazy Generator</span>
+(x*x <span class="kw">for</span> x <span class="kw">in</span> big_list)</pre>
+                    </div>
+                </div>
+                <div class="mt-8 border-t border-stone-800 pt-6">
+                    <div class="text-[10px] uppercase font-label-caps text-stone-600 mb-3 tracking-tighter">Nested Flattening</div>
+                    <code class="text-xs text-primary-container font-code-snippet">flat = [x <span class="kw">for</span> row <span class="kw">in</span> matrix <span class="kw">for</span> x <span class="kw">in</span> row]</code>
+                </div>
+            </article>
+
+            <article class="col-span-12 lg:col-span-5 border border-stone-800 p-6 bg-surface-container-lowest">
+                <h3 class="font-headline-md text-xl mb-6 uppercase">PERFORMANCE</h3>
+                <div class="bg-stone-950 p-6 border-l border-stone-700 italic text-[11px] text-stone-400 mb-6 leading-relaxed">
+                    "List comprehensions are ~35% faster than for-loops. Use generator expressions (parentheses) to avoid memory spikes with large datasets."
+                </div>
+                <div class="p-4 border border-stone-800 bg-stone-900/50">
+                    <h4 class="text-[10px] uppercase font-label-caps text-stone-500 mb-3">Ternary Operator</h4>
+                    <code class="text-xs font-code-snippet text-primary-container">val = x <span class="kw">if</span> x > <span class="nm">0</span> <span class="kw">else</span> <span class="op">-</span>x</code>
+                </div>
+            </article>
+        </section>
+
+        <!-- ────────────────────────────────────────────────────── -->
+        <!-- SECTION 11 — BUILT-IN FUNCTIONS -->
+        <!-- ────────────────────────────────────────────────────── -->
+        <section class="grid grid-cols-12 gap-px bg-stone-800 border-b border-stone-800" id="s11">
+            <header class="col-span-12 p-8 bg-surface-container-lowest">
+                <div class="flex items-center gap-4 mb-4">
+                    <span class="px-3 py-1 bg-primary-container text-stone-950 font-label-caps text-[10px] tracking-widest uppercase">Chapter 11</span>
+                    <span class="h-px flex-1 bg-stone-800"></span>
+                    <span class="text-stone-500 font-label-caps text-[10px] tracking-widest uppercase">Standard Library</span>
+                </div>
+                <h2 class="font-headline-lg text-4xl mb-2 tracking-tight uppercase">Built-in Functions</h2>
+                <p class="font-body-md text-stone-400 text-xs tracking-widest italic">Core utilities for functional programming.</p>
+            </header>
+
+            <article class="col-span-12 lg:col-span-6 border border-stone-800 p-6 bg-surface-container-low">
+                <h3 class="font-headline-md text-xl text-primary-container uppercase mb-6">POWER PATTERNS</h3>
+                <pre class="bg-stone-950 p-4 text-xs font-code-snippet border border-stone-800 overflow-x-auto"><code><span class="cm"># range tricks</span>
+<span class="fn">range</span>(<span class="nm">10</span>, <span class="nm">0</span>, <span class="op">-</span><span class="nm">1</span>)   <span class="cm"># 10,9,...,1</span>
+<span class="fn">range</span>(<span class="nm">0</span>, <span class="nm">10</span>, <span class="nm">2</span>)    <span class="cm"># 0,2,4,6,8</span>
+<span class="fn">list</span>(<span class="fn">range</span>(<span class="nm">5</span>))       <span class="cm"># [0,1,2,3,4]</span>
+
+<span class="cm"># zip — stops at shortest!</span>
+<span class="fn">zip</span>([<span class="nm">1</span>,<span class="nm">2</span>],[<span class="nm">3</span>,<span class="nm">4</span>,<span class="nm">5</span>])  <span class="cm"># (1,3),(2,4)</span>
+<span class="fn">zip</span>(*matrix)         <span class="cm"># transpose matrix!</span>
+
+<span class="cm"># enumerate from index 1:</span>
+<span class="fn">enumerate</span>(lst, <span class="nm">1</span>)
+
+<span class="cm"># sum of diagonal:</span>
+<span class="fn">sum</span>(matrix[i][i] <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="fn">len</span>(matrix)))
+
+<span class="cm"># Fast modular exponentiation:</span>
+<span class="fn">pow</span>(<span class="nm">2</span>, <span class="nm">100</span>, <span class="nm">10**9</span>+<span class="nm">7</span>)  <span class="cm"># 2^100 mod MOD</span></code></pre>
+            </article>
+
+            <article class="col-span-12 lg:col-span-6 border border-stone-800 p-6 bg-surface-container-low">
+                <h3 class="font-headline-md text-xl text-primary-container uppercase mb-6">UTILITIES</h3>
+                <pre class="bg-stone-950 p-4 text-xs font-code-snippet border border-stone-800 overflow-x-auto"><code><span class="cm"># max with default (empty case):</span>
+<span class="fn">max</span>(lst, default=<span class="nm">0</span>)
+
+<span class="cm"># min index:</span>
+<span class="fn">min</span>(<span class="fn">range</span>(<span class="fn">len</span>(lst)), key=<span class="kw">lambda</span> i: lst[i])
+
+<span class="cm"># flatten iterables:</span>
+<span class="kw">from</span> itertools <span class="kw">import</span> chain
+<span class="fn">list</span>(<span class="fn">chain</span>.<span class="fn">from_iterable</span>(nested))</code></pre>
+            </article>
+        </section>
+
+        <!-- ────────────────────────────────────────────────────── -->
+        <!-- SECTION 12 — ITERTOOLS -->
+        <!-- ────────────────────────────────────────────────────── -->
+        <section class="grid grid-cols-12 gap-px bg-stone-800 border-b border-stone-800" id="s12">
+            <header class="col-span-12 p-8 bg-surface-container-lowest">
+                <div class="flex items-center gap-4 mb-4">
+                    <span class="px-3 py-1 bg-primary-container text-stone-950 font-label-caps text-[10px] tracking-widest uppercase">Chapter 12</span>
+                    <span class="h-px flex-1 bg-stone-800"></span>
+                    <span class="text-stone-500 font-label-caps text-[10px] tracking-widest uppercase">Combinatorics</span>
+                </div>
+                <h2 class="font-headline-lg text-4xl mb-2 tracking-tight uppercase">itertools</h2>
+                <p class="font-body-md text-stone-400 text-xs tracking-widest italic">High-performance iterator building blocks.</p>
+            </header>
+
+            <article class="col-span-12 lg:col-span-7 border border-stone-800 p-6 bg-surface-container-low">
+                <h3 class="font-headline-md text-xl text-primary-container uppercase mb-6">COMBINATORICS</h3>
+                <pre class="bg-stone-950 p-4 text-xs font-code-snippet border border-stone-800 overflow-x-auto"><code><span class="kw">from</span> itertools <span class="kw">import</span> *
+
+<span class="cm"># Permutations (order matters)</span>
+<span class="fn">permutations</span>([<span class="nm">1</span>,<span class="nm">2</span>,<span class="nm">3</span>])        <span class="cm"># all 3! arrangements</span>
+<span class="fn">permutations</span>([<span class="nm">1</span>,<span class="nm">2</span>,<span class="nm">3</span>], <span class="nm">2</span>)     <span class="cm"># choose 2</span>
+<span class="cm"># → (1,2),(1,3),(2,1),(2,3),(3,1),(3,2)</span>
+
+<span class="cm"># Combinations (order doesn't matter)</span>
+<span class="fn">combinations</span>([<span class="nm">1</span>,<span class="nm">2</span>,<span class="nm">3</span>], <span class="nm">2</span>)     <span class="cm"># choose 2</span>
+<span class="cm"># → (1,2),(1,3),(2,3)</span>
+
+<span class="cm"># Combinations with repetition</span>
+<span class="fn">combinations_with_replacement</span>([<span class="nm">1</span>,<span class="nm">2</span>], <span class="nm">2</span>)
+<span class="cm"># → (1,1),(1,2),(2,2)</span>
+
+<span class="cm"># Cartesian product</span>
+<span class="fn">product</span>([<span class="nm">1</span>,<span class="nm">2</span>], [<span class="st">'a'</span>,<span class="st">'b'</span>])     <span class="cm"># all pairs</span>
+<span class="cm"># → (1,'a'),(1,'b'),(2,'a'),(2,'b')</span>
+<span class="fn">product</span>(<span class="fn">range</span>(<span class="nm">2</span>), repeat=<span class="nm">3</span>)  <span class="cm"># 3-bit binary numbers</span></code></pre>
+            </article>
+
+            <article class="col-span-12 lg:col-span-5 border border-stone-800 p-6 bg-surface-container-low flex flex-col">
+                <h3 class="font-headline-md text-xl text-primary-container uppercase mb-6">ITERATORS & SEQUENCES</h3>
+                <pre class="bg-stone-950 p-4 text-xs font-code-snippet border border-stone-800 overflow-x-auto flex-1"><code><span class="cm"># Chaining & Grouping</span>
+<span class="fn">chain</span>([<span class="nm">1</span>,<span class="nm">2</span>], [<span class="nm">3</span>,<span class="nm">4</span>])          <span class="cm"># 1,2,3,4</span>
+<span class="fn">groupby</span>([<span class="nm">1</span>,<span class="nm">1</span>,<span class="nm">2</span>,<span class="nm">2</span>,<span class="nm">3</span>])        <span class="cm"># group consecutive</span>
+
+<span class="cm"># Accumulate (prefix sum!)</span>
+<span class="fn">accumulate</span>([<span class="nm">1</span>,<span class="nm">2</span>,<span class="nm">3</span>,<span class="nm">4</span>])       <span class="cm"># 1,3,6,10</span>
+
+<span class="cm"># Infinite Sequences</span>
+<span class="fn">count</span>(<span class="nm">10</span>)                     <span class="cm"># 10,11,12...</span>
+<span class="fn">cycle</span>([<span class="nm">1</span>,<span class="nm">2</span>,<span class="nm">3</span>])              <span class="cm"># 1,2,3,1,2,3...</span>
+<span class="fn">repeat</span>(<span class="nm">42</span>, <span class="nm">5</span>)               <span class="cm"># 42 x5</span>
+
+<span class="cm"># Slicing an iterator:</span>
+<span class="fn">islice</span>(<span class="fn">count</span>(<span class="nm">1</span>), <span class="nm">5</span>)          <span class="cm"># [1,2,3,4,5]</span></code></pre>
+            </article>
+        </section>
+
+        <!-- ────────────────────────────────────────────────────── -->
+        <!-- SECTION 13 — FUNCTOOLS -->
+        <!-- ────────────────────────────────────────────────────── -->
+        <section class="grid grid-cols-12 gap-px bg-stone-800 border-b border-stone-800" id="s13">
+            <header class="col-span-12 p-8 bg-surface-container-lowest">
+                <div class="flex items-center gap-4 mb-4">
+                    <span class="px-3 py-1 bg-primary-container text-stone-950 font-label-caps text-[10px] tracking-widest uppercase">Chapter 13</span>
+                    <span class="h-px flex-1 bg-stone-800"></span>
+                    <span class="text-stone-500 font-label-caps text-[10px] tracking-widest uppercase">Memoization</span>
+                </div>
+                <h2 class="font-headline-lg text-4xl mb-2 tracking-tight uppercase">functools</h2>
+                <p class="font-body-md text-stone-400 text-xs tracking-widest italic">Higher-order functions and caching patterns.</p>
+            </header>
+
+            <article class="col-span-12 lg:col-span-6 border border-stone-800 p-6 bg-surface-container-low">
+                <h3 class="font-headline-md text-xl text-primary-container uppercase mb-6">@lru_cache — MEMOIZATION</h3>
+                <pre class="bg-stone-950 p-4 text-xs font-code-snippet border border-stone-800 overflow-x-auto"><code><span class="kw">from</span> functools <span class="kw">import</span> lru_cache, cache
+
+<span class="cm"># @cache = @lru_cache(maxsize=None)</span>
+<span class="dc">@cache</span>
+<span class="kw">def</span> <span class="fn">fib</span>(n):
+    <span class="kw">if</span> n <= <span class="nm">1</span>: <span class="kw">return</span> n
+    <span class="kw">return</span> <span class="fn">fib</span>(n-<span class="nm">1</span>) + <span class="fn">fib</span>(n-<span class="nm">2</span>)
+
+<span class="cm"># Management:</span>
+<span class="fn">fib</span>.<span class="fn">cache_info</span>()   <span class="cm"># hits, misses, size</span>
+<span class="fn">fib</span>.<span class="fn">cache_clear</span>()  <span class="cm"># clear cache</span>
+
+<span class="cm"># Use functools.cached_property:</span>
+<span class="kw">from</span> functools <span class="kw">import</span> cached_property
+<span class="kw">class</span> <span class="cl">Tree</span>:
+    <span class="dc">@cached_property</span>
+    <span class="kw">def</span> <span class="fn">height</span>(self): ...</code></pre>
+            </article>
+
+            <article class="col-span-12 lg:col-span-6 border border-stone-800 p-6 bg-surface-container-low flex flex-col">
+                <h3 class="font-headline-md text-xl text-primary-container uppercase mb-6">REDUCE & PARTIAL</h3>
+                <pre class="bg-stone-950 p-4 text-xs font-code-snippet border border-stone-800 overflow-x-auto flex-1"><code><span class="kw">from</span> functools <span class="kw">import</span> reduce, partial
+
+<span class="cm"># reduce(fn, iterable, initial)</span>
+<span class="fn">reduce</span>(<span class="kw">lambda</span> a, b: a*b, [<span class="nm">1</span>,<span class="nm">2</span>,<span class="nm">3</span>,<span class="nm">4</span>])
+
+<span class="cm"># partial — pre-fill arguments</span>
+<span class="kw">def</span> <span class="fn">power</span>(base, exp): <span class="kw">return</span> base**exp
+square = <span class="fn">partial</span>(power, exp=<span class="nm">2</span>)
+
+<span class="cm"># total_ordering:</span>
+<span class="kw">from</span> functools <span class="kw">import</span> total_ordering
+<span class="dc">@total_ordering</span>
+<span class="kw">class</span> <span class="cl">Node</span>:
+    <span class="kw">def</span> <span class="fn">__eq__</span>(self, o): <span class="kw">return</span> self.val == o.val
+    <span class="kw">def</span> <span class="fn">__lt__</span>(self, o): <span class="kw">return</span> self.val < o.val
+    <span class="cm"># __le__, __gt__, __ge__ auto-generated!</span></code></pre>
+            </article>
+        </section>
+        <!-- ────────────────────────────────────────────────────── -->
+        <!-- SECTION 14 — BIT OPERATIONS -->
+        <!-- ────────────────────────────────────────────────────── -->
+        <section class="grid grid-cols-12 gap-8 mb-24" id="s14">
+            <header class="col-span-12 mb-8 border-b border-rule pb-4">
+                <div class="flex justify-between items-end">
+                    <h2 class="inline-block font-headline-lg text-headline-lg uppercase tracking-tight pb-2 double-underline">
+                        Bit Operations
+                    </h2>
+                    <span class="font-label-caps text-stone-500 text-[10px] mb-2">CHAPTER 14</span>
+                </div>
+            </header>
+
+            <article class="col-span-12 lg:col-span-7 border border-rule p-6 bg-surface-container-low">
+                <div class="flex justify-between items-start mb-6">
+                    <h3 class="font-headline-md text-xl text-accent uppercase">Bitwise Operators</h3>
+                    <span class="font-label-caps text-dim text-[9px]">REF 14.1</span>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <pre class="font-code-snippet bg-surface-container-lowest p-4 border border-rule"><code>x & y   <span class="cm"># AND</span>
+x | y   <span class="cm"># OR</span>
+x ^ y   <span class="cm"># XOR</span>
+~x      <span class="cm"># NOT (-(x+1))</span>
+x << n  <span class="cm"># Left Shift</span>
+x >> n  <span class="cm"># Right Shift</span></code></pre>
+                    <pre class="font-code-snippet bg-surface-container-lowest p-4 border border-rule"><code><span class="cm"># Binary Rep</span>
+<span class="fn">bin</span>(<span class="nm">5</span>)      <span class="cm"># '0b101'</span>
+<span class="fn">int</span>(<span class="st">'101'</span>,<span class="nm">2</span>) <span class="cm"># 5</span>
+<span class="nm">5</span>.<span class="fn">bit_count</span>() <span class="cm"># 2 (3.10+)</span></code></pre>
+                </div>
+            </article>
+
+            <article class="col-span-12 lg:col-span-5 border border-rule p-6 bg-surface-container-low">
+                <div class="flex justify-between items-start mb-6">
+                    <h3 class="font-headline-md text-xl text-accent uppercase">DSA Tricks</h3>
+                    <span class="font-label-caps text-dim text-[9px]">REF 14.2</span>
+                </div>
+                <div class="space-y-4">
+                    <div class="p-3 bg-surface-container-lowest border border-rule">
+                        <div class="text-[10px] text-accent font-label-caps mb-1">Power of Two?</div>
+                        <code class="text-xs font-code-snippet">x > <span class="nm">0</span> <span class="kw">and</span> (x & (x<span class="op">-</span><span class="nm">1</span>)) == <span class="nm">0</span></code>
+                    </div>
+                    <div class="p-3 bg-surface-container-lowest border border-rule">
+                        <div class="text-[10px] text-accent font-label-caps mb-1">Odd/Even</div>
+                        <code class="text-xs font-code-snippet">x & <span class="nm">1</span> == <span class="nm">0</span> <span class="cm"># Even</span></code>
+                    </div>
+                </div>
+            </article>
+        </section>
+
+        <!-- ────────────────────────────────────────────────────── -->
+        <!-- SECTION 15 — MATH & NUMBERS -->
+        <!-- ────────────────────────────────────────────────────── -->
+        <section class="grid grid-cols-12 gap-8 mb-24" id="s15">
+            <header class="col-span-12 mb-8 border-b border-rule pb-4">
+                <div class="flex justify-between items-end">
+                    <h2 class="inline-block font-headline-lg text-headline-lg uppercase tracking-tight pb-2 double-underline">
+                        Math & Numbers
+                    </h2>
+                    <span class="font-label-caps text-stone-500 text-[10px] mb-2">CHAPTER 15</span>
+                </div>
+            </header>
+
+            <article class="col-span-12 lg:col-span-6 border border-rule p-6 bg-surface-container-low">
+                <div class="flex justify-between items-start mb-6">
+                    <h3 class="font-headline-md text-xl text-accent uppercase">The math Module</h3>
+                    <span class="font-label-caps text-dim text-[9px]">REF 15.1</span>
+                </div>
+                <pre class="font-code-snippet bg-surface-container-lowest p-4 border border-rule"><code><span class="kw">import</span> math
+
+math.<span class="fn">gcd</span>(a, b)          <span class="cm"># GCD (Euclidean)</span>
+math.<span class="fn">lcm</span>(a, b)          <span class="cm"># LCM (3.9+)</span>
+math.<span class="fn">comb</span>(n, k)         <span class="cm"># Combinations</span>
+math.<span class="fn">isqrt</span>(n)           <span class="cm"># int sqrt</span>
+math.<span class="fn">inf</span> / math.<span class="fn">pi</span>      <span class="cm"># Constants</span></code></pre>
+            </article>
+
+            <article class="col-span-12 lg:col-span-6 border border-rule p-6 bg-surface-container-low">
+                <div class="flex justify-between items-start mb-6">
+                    <h3 class="font-headline-md text-xl text-accent uppercase">Patterns</h3>
+                    <span class="font-label-caps text-dim text-[9px]">REF 15.2</span>
+                </div>
+                <pre class="font-code-snippet bg-surface-container-lowest p-4 border border-rule"><code><span class="cm"># Fast Mod-Exp</span>
+<span class="fn">pow</span>(base, exp, MOD)
+
+<span class="cm"># Modulo (Cyclic)</span>
+arr[i % <span class="fn">len</span>(arr)]
+
+<span class="cm"># Rounding</span>
+a // b      <span class="cm"># Floor</span>
+(a + b <span class="op">-</span> <span class="nm">1</span>) // b <span class="cm"># Ceil</span></code></pre>
+            </article>
+        </section>
+
+        <!-- ────────────────────────────────────────────────────── -->
+        <!-- SECTION 16 — FLOW & DSA PATTERNS -->
+        <!-- ────────────────────────────────────────────────────── -->
+        <section class="grid grid-cols-12 gap-8 mb-24" id="s16">
+            <header class="col-span-12 mb-8 border-b border-rule pb-4">
+                <div class="flex justify-between items-end">
+                    <h2 class="inline-block font-headline-lg text-headline-lg uppercase tracking-tight pb-2 double-underline">
+                        Flow & Patterns
+                    </h2>
+                    <span class="font-label-caps text-stone-500 text-[10px] mb-2">CHAPTER 16</span>
+                </div>
+            </header>
+
+            <article class="col-span-12 lg:col-span-6 border border-rule p-6 bg-surface-container-low">
+                <div class="flex justify-between items-start mb-6">
+                    <h3 class="font-headline-md text-xl text-accent uppercase">Pointer Logic</h3>
+                    <span class="font-label-caps text-dim text-[9px]">REF 16.1</span>
+                </div>
+                <pre class="font-code-snippet bg-surface-container-lowest p-4 border border-rule"><code><span class="cm"># Two-pointer</span>
+l, r = <span class="nm">0</span>, <span class="fn">len</span>(arr) - <span class="nm">1</span>
+<span class="kw">while</span> l < r:
+    mid = (l + r) // <span class="nm">2</span>
+    <span class="kw">if</span> cond: r = mid
+    <span class="kw">else</span>: l = mid + <span class="nm">1</span>
+
+<span class="cm"># Sliding Window</span>
+<span class="kw">for</span> r <span class="kw">in</span> <span class="fn">range</span>(<span class="fn">len</span>(s)):
+    window[s[r]] += <span class="nm">1</span>
+    <span class="kw">while</span> invalid:
+        window[s[l]] -= <span class="nm">1</span>
+        l += <span class="nm">1</span></code></pre>
+            </article>
+
+            <article class="col-span-12 lg:col-span-6 border border-rule p-6 bg-surface-container-low">
+                <div class="flex justify-between items-start mb-6">
+                    <h3 class="font-headline-md text-xl text-accent uppercase">Structural Pattern Matching</h3>
+                    <span class="font-label-caps text-dim text-[9px]">REF 16.2</span>
+                </div>
+                <pre class="font-code-snippet bg-surface-container-lowest p-4 border border-rule"><code><span class="kw">match</span> command:
+    <span class="kw">case</span> <span class="st">"quit"</span>: <span class="fn">quit</span>()
+    <span class="kw">case</span> [x, y]: <span class="fn">move</span>(x, y)
+    <span class="kw">case</span> {<span class="st">"id"</span>: i}: <span class="fn">get</span>(i)
+    <span class="kw">case</span> _: <span class="fn">print</span>(<span class="st">"default"</span>)</code></pre>
+            </article>
+        </section>
+
+        <!-- ────────────────────────────────────────────────────── -->
+        <!-- SECTION 17 — CLASSES / OOP -->
+        <!-- ────────────────────────────────────────────────────── -->
+        <section class="grid grid-cols-12 gap-8 mb-24" id="s17">
+            <header class="col-span-12 mb-8 border-b border-rule pb-4">
+                <div class="flex justify-between items-end">
+                    <h2 class="inline-block font-headline-lg text-headline-lg uppercase tracking-tight pb-2 double-underline">
+                        Classes & OOP
+                    </h2>
+                    <span class="font-label-caps text-stone-500 text-[10px] mb-2">CHAPTER 17</span>
+                </div>
+            </header>
+            
+            <article class="col-span-12 lg:col-span-6 border border-rule p-6 bg-surface-container-low">
+                <div class="flex justify-between items-start mb-6">
+                    <h3 class="font-headline-md text-xl text-accent uppercase">Common Data Structures</h3>
+                    <span class="font-label-caps text-dim text-[9px]">REF 17.1</span>
+                </div>
+                <pre class="font-code-snippet bg-surface-container-lowest p-4 border border-rule"><code><span class="kw">class</span> <span class="cl">ListNode</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, val=<span class="nm">0</span>, next=<span class="kw">None</span>):
+        self.val, self.next = val, next
+
+<span class="kw">class</span> <span class="cl">TreeNode</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, val=<span class="nm">0</span>, left=<span class="kw">None</span>, right=<span class="kw">None</span>):
+        self.val, self.left, self.right = val, left, right
+
+<span class="kw">class</span> <span class="cl">UnionFind</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, n):
+        self.parent = <span class="fn">list</span>(<span class="fn">range</span>(n))
+        self.rank = [<span class="nm">0</span>] * n
+    <span class="kw">def</span> <span class="fn">find</span>(self, x):
+        <span class="kw">if</span> self.parent[x] != x:
+            self.parent[x] = self.<span class="fn">find</span>(self.parent[x])
+        <span class="kw">return</span> self.parent[x]
+    <span class="kw">def</span> <span class="fn">union</span>(self, x, y):
+        px, py = self.<span class="fn">find</span>(x), self.<span class="fn">find</span>(y)
+        <span class="kw">if</span> px == py: <span class="kw">return False</span>
+        <span class="kw">if</span> self.rank[px] < self.rank[py]: px, py = py, px
+        self.parent[py] = px
+        <span class="kw">return True</span></code></pre>
+            </article>
+
+            <article class="col-span-12 lg:col-span-6 border border-rule p-6 bg-surface-container-low">
+                <div class="flex justify-between items-start mb-6">
+                    <h3 class="font-headline-md text-xl text-accent uppercase">Magic Methods & Dataclasses</h3>
+                    <span class="font-label-caps text-dim text-[9px]">REF 17.2</span>
+                </div>
+                <pre class="font-code-snippet bg-surface-container-lowest p-4 border border-rule"><code><span class="cm"># Comparison for heapq</span>
+<span class="kw">class</span> <span class="cl">Task</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, priority, name):
+        self.priority, self.name = priority, name
+    <span class="kw">def</span> <span class="fn">__lt__</span>(self, other):
+        <span class="kw">return</span> self.priority < other.priority
+
+<span class="cm"># Hashable for sets/dicts</span>
+<span class="kw">class</span> <span class="cl">Point</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, x, y):
+        self.x, self.y = x, y
+    <span class="kw">def</span> <span class="fn">__hash__</span>(self):
+        <span class="kw">return</span> <span class="fn">hash</span>((self.x, self.y))
+    <span class="kw">def</span> <span class="fn">__eq__</span>(self, other):
+        <span class="kw">return</span> (self.x, self.y) == (other.x, other.y)
+
+<span class="cm"># Modern Data Records</span>
+<span class="kw">from</span> dataclasses <span class="kw">import</span> dataclass
+<span class="dc">@dataclass</span>
+<span class="kw">class</span> <span class="cl">State</span>:
+    node: int</code></pre>
+            </article>
+        </section>
+
+        <!-- ────────────────────────────────────────────────────── -->
+        <!-- SECTION 18 — EXCEPTIONS -->
+        <!-- ────────────────────────────────────────────────────── -->
+        <section class="grid grid-cols-12 gap-8 mb-24" id="s18">
+            <header class="col-span-12 mb-8 border-b border-rule pb-4">
+                <div class="flex justify-between items-end">
+                    <h2 class="inline-block font-headline-lg text-headline-lg uppercase tracking-tight pb-2 double-underline">
+                        Exceptions & Debugging
+                    </h2>
+                    <span class="font-label-caps text-stone-500 text-[10px] mb-2">CHAPTER 18</span>
+                </div>
+            </header>
+
+            <article class="col-span-12 lg:col-span-6 border border-rule p-6 bg-surface-container-low">
+                <div class="flex justify-between items-start mb-6">
+                    <h3 class="font-headline-md text-xl text-accent uppercase">try/except Blocks</h3>
+                    <span class="font-label-caps text-dim text-[9px]">REF 18.1</span>
+                </div>
+                <pre class="font-code-snippet bg-surface-container-lowest p-4 border border-rule"><code><span class="kw">try</span>:
+    result = risky_op()
+<span class="kw">except</span> <span class="cl">ValueError</span> <span class="kw">as</span> e:
+    <span class="fn">print</span>(f<span class="st">"Value error: {e}"</span>)
+<span class="kw">except</span> (<span class="cl">TypeError</span>, <span class="cl">IndexError</span>):
+    <span class="cm"># catch multiple</span>
+<span class="kw">except</span> <span class="cl">Exception</span> <span class="kw">as</span> e:
+    <span class="fn">print</span>(f<span class="st">"Unexpected: {type(e).__name__}: {e}"</span>)
+<span class="kw">else</span>:
+    <span class="cm"># runs if NO exception</span>
+<span class="kw">finally</span>:
+    <span class="cm"># ALWAYS runs (cleanup)</span>
+
+<span class="cm"># Raise</span>
+<span class="kw">raise</span> <span class="cl">ValueError</span>(<span class="st">"bad input"</span>)
+<span class="kw">raise</span>                    <span class="cm"># re-raise current</span>
+<span class="kw">raise</span> <span class="cl">TypeError</span>() <span class="kw">from</span> <span class="kw">None</span>  <span class="cm"># hide context</span>
+
+<span class="cm"># Custom exception:</span>
+<span class="kw">class</span> <span class="cl">GraphError</span>(<span class="cl">Exception</span>): <span class="kw">pass</span></code></pre>
+            </article>
+
+            <article class="col-span-12 lg:col-span-6 border border-rule p-6 bg-surface-container-low">
+                <div class="flex justify-between items-start mb-6">
+                    <h3 class="font-headline-md text-xl text-accent uppercase">Common DSA Exceptions</h3>
+                    <span class="font-label-caps text-dim text-[9px]">REF 18.2</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="ref-table w-full text-xs">
+                        <tbody class="text-stone-400">
+                            <tr class="border-b border-rule/30"><td class="py-2 pr-4 text-accent">IndexError</td><td>List index out of range</td></tr>
+                            <tr class="border-b border-rule/30"><td class="py-2 pr-4 text-accent">KeyError</td><td>Dict key not found</td></tr>
+                            <tr class="border-b border-rule/30"><td class="py-2 pr-4 text-accent">ValueError</td><td>Wrong value</td></tr>
+                            <tr class="border-b border-rule/30"><td class="py-2 pr-4 text-accent">TypeError</td><td>Wrong type for operation</td></tr>
+                            <tr class="border-b border-rule/30"><td class="py-2 pr-4 text-accent">RecursionError</td><td>Max recursion depth exceeded</td></tr>
+                            <tr class="border-b border-rule/30"><td class="py-2 pr-4 text-accent">StopIteration</td><td>Iterator exhausted</td></tr>
+                            <tr><td class="py-2 pr-4 text-accent">MemoryError</td><td>Out of memory</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-6 p-4 bg-surface-container-lowest border border-rule">
+                    <div class="text-[10px] text-accent font-label-caps mb-2">DSA TIP</div>
+                    <p class="text-[11px] text-stone-500 leading-relaxed">
+                        <strong class="text-stone-300">RecursionError</strong> is common in DFS — set <code class="text-accent">sys.setrecursionlimit()</code> for deep trees.
+                    </p>
+                </div>
+            </article>
+        </section>
+
+        <!-- ────────────────────────────────────────────────────── -->
+        <!-- SECTION 19 — COMPLEXITY REFERENCE -->
+        <!-- ────────────────────────────────────────────────────── -->
+        <section class="grid grid-cols-12 gap-8 mb-24" id="s19">
+            <header class="col-span-12 mb-8 border-b border-rule pb-4">
+                <div class="flex justify-between items-end">
+                    <h2 class="inline-block font-headline-lg text-headline-lg uppercase tracking-tight pb-2 double-underline">
+                        Complexity Quick Ref
+                    </h2>
+                    <span class="font-label-caps text-stone-500 text-[10px] mb-2">CHAPTER 19</span>
+                </div>
+            </header>
+
+            <article class="col-span-12 lg:col-span-7 border border-rule p-6 bg-surface-container-low">
+                <div class="flex justify-between items-start mb-6">
+                    <h3 class="font-headline-md text-xl text-accent uppercase">Big O Operations</h3>
+                    <span class="font-label-caps text-dim text-[9px]">REF 19.1</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="ref-table w-full text-xs">
+                        <thead class="text-dim border-b border-rule">
+                            <tr>
+                                <th class="text-left py-2">Data Structure</th>
+                                <th class="text-left py-2">Access</th>
+                                <th class="text-left py-2">Search</th>
+                                <th class="text-left py-2">Insert</th>
+                            </tr>
+                        </thead>
+                        <tbody class="font-mono">
+                            <tr class="border-b border-rule/30"><td class="py-2">list</td><td>O(1)</td><td>O(n)</td><td>O(1)*</td></tr>
+                            <tr class="border-b border-rule/30"><td class="py-2">dict/set</td><td>O(1)</td><td>O(1)</td><td>O(1)</td></tr>
+                            <tr class="border-b border-rule/30"><td class="py-2">deque</td><td>O(n)</td><td>O(n)</td><td>O(1)</td></tr>
+                            <tr><td class="py-2">heapq</td><td>O(1)</td><td>O(n)</td><td>O(log n)</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="text-[9px] text-dim mt-4">* amortized append</p>
+            </article>
+
+            <article class="col-span-12 lg:col-span-5 border border-rule p-6 bg-surface-container-low text-dim text-[10px] leading-relaxed">
+                <div class="flex justify-between items-start mb-6">
+                    <h3 class="font-headline-md text-xl text-accent uppercase">DSA Notes</h3>
+                    <span class="font-label-caps text-dim text-[9px]">REF 19.2</span>
+                </div>
+                <ul class="space-y-2 list-disc pl-4">
+                    <li><strong class="text-accent">Python ints</strong> are arbitrary-precision (no overflow).</li>
+                    <li><strong class="text-accent">Timsort</strong> is O(n log n) worst/avg, O(n) best case.</li>
+                    <li><strong class="text-accent">Union-Find</strong> is nearly constant O(α(n)).</li>
+                    <li><strong class="text-accent">Search:</strong> Bisect (O(log n)) requires sorted input.</li>
+                </ul>
+            </article>
+        </section>
+
+    </main>
+
+    <footer class="max-w-[1600px] mx-auto px-8 lg:px-16 py-8 border-t border-stone-800">
+        <div class="flex justify-between items-center text-[10px] font-label-caps text-stone-600 tracking-widest uppercase mb-4">
+            <span>Python DSA · The Digital Broadsheet</span>
+            <span>Version 2.1 · May 2025</span>
+            <span>Est. 2025</span>
+        </div>
+        <p class="text-center font-headline-md text-sm text-stone-600 italic">
+            Built for performance. Curated for clarity. Happy Grinding. 🐍
+        </p>
+    </footer>
+    </div><!-- end max-w wrapper -->
+
+    <script>
+    // ── Section Index (for search) ──
+    const sectionIndex = [];
+    document.querySelectorAll('section[id^="s"]').forEach(sec => {
+        const heading = sec.querySelector('h2');
+        if (heading) {
+            sectionIndex.push({
+                id: sec.id,
+                num: sec.id.replace('s', '').padStart(2, '0'),
+                title: heading.textContent.trim().replace(/\s+/g, ' ')
+            });
+        }
+    });
+
+    // ── Sidebar ──
+    function openSidebar() {
+        document.getElementById('sidebar').classList.add('active');
+        document.getElementById('sidebar-overlay').classList.add('active');
+    }
+    function closeSidebar() {
+        document.getElementById('sidebar').classList.remove('active');
+        document.getElementById('sidebar-overlay').classList.remove('active');
+    }
+    document.querySelectorAll('.sidebar-link').forEach(link => {
+        link.addEventListener('click', closeSidebar);
+    });
+
+    // ── Search ──
+    function openSearch() {
+        document.getElementById('search-overlay').classList.add('active');
+        document.getElementById('search-panel').classList.add('active');
+        const input = document.getElementById('search-input');
+        input.value = '';
+        input.focus();
+        renderResults(sectionIndex);
+    }
+    function closeSearch() {
+        document.getElementById('search-overlay').classList.remove('active');
+        document.getElementById('search-panel').classList.remove('active');
+    }
+    function filterSections(query) {
+        const q = query.toLowerCase().trim();
+        if (!q) { renderResults(sectionIndex); return; }
+        const filtered = sectionIndex.filter(s => s.title.toLowerCase().includes(q));
+        renderResults(filtered);
+    }
+    function renderResults(results) {
+        const container = document.getElementById('search-results');
+        if (results.length === 0) {
+            container.innerHTML = '<div style="padding:12px;color:#636366;font-family:Space Grotesk,sans-serif;font-size:13px;">No matching sections found.</div>';
+            return;
+        }
+        container.innerHTML = results.map(r =>
+            `<div class="search-result-item" onclick="navigateTo('${r.id}')">
+                <span class="result-num">${r.num}</span>
+                <span>${r.title}</span>
+            </div>`
+        ).join('');
+    }
+    function navigateTo(id) {
+        closeSearch();
+        document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // ── Settings ──
+    function openSettings() {
+        document.getElementById('settings-overlay').classList.add('active');
+        document.getElementById('settings-panel').classList.add('active');
+    }
+    function closeSettings() {
+        document.getElementById('settings-overlay').classList.remove('active');
+        document.getElementById('settings-panel').classList.remove('active');
+    }
+    function setFontSize(size) {
+        document.body.classList.remove('font-sm', 'font-lg');
+        if (size !== 'md') document.body.classList.add('font-' + size);
+        document.querySelectorAll('[data-size]').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.size === size);
+        });
+        localStorage.setItem('pydsa-font-size', size);
+    }
+    function setTheme(theme) {
+        document.body.classList.toggle('light', theme === 'light');
+        document.querySelectorAll('[data-theme]').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.theme === theme);
+        });
+        localStorage.setItem('pydsa-theme', theme);
+    }
+
+    // ── Restore preferences on load ──
+    (function restorePrefs() {
+        const savedSize = localStorage.getItem('pydsa-font-size');
+        if (savedSize) setFontSize(savedSize);
+        const savedTheme = localStorage.getItem('pydsa-theme');
+        if (savedTheme) setTheme(savedTheme);
+    })();
+
+    // ── Scroll-spy ──
+    const sections = document.querySelectorAll('section[id^="s"]');
+    const navLinks = document.querySelectorAll('.sidebar-link');
+    function updateActiveLink() {
+        let current = '';
+        sections.forEach(section => {
+            const rect = section.getBoundingClientRect();
+            if (rect.top <= 120) current = section.id;
+        });
+        navLinks.forEach(link => {
+            const isActive = link.dataset.section === current;
+            link.classList.toggle('text-accent', isActive);
+            link.classList.toggle('border-accent', isActive);
+            link.classList.toggle('border-l-2', isActive);
+            link.classList.toggle('font-bold', isActive);
+            link.classList.toggle('text-dim', !isActive);
+            link.classList.toggle('border-rule', !isActive);
+        });
+    }
+    window.addEventListener('scroll', updateActiveLink, { passive: true });
+    updateActiveLink();
+
+    // ── Keyboard shortcuts ──
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') { closeSidebar(); closeSearch(); closeSettings(); }
+        if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); openSearch(); }
+    });
+    </script>
+
+</body>
+
+</html>
