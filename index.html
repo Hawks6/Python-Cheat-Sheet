@@ -28,6 +28,11 @@
             scrollbar-color: #4d4633 transparent;
         }
 
+        /* Global Cursor Fix — Tailwind reset strips default pointer */
+        button, a, [onclick], [role="button"], .search-result-item, .settings-toggle-btn, .settings-action-btn, .sidebar-link {
+            cursor: pointer !important;
+        }
+
         /* Custom syntax highlighting */
         .kw { color: #ffd43b; font-weight: 600; } /* keywords */
         .st { color: #a9d293; } /* strings */
